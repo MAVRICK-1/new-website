@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 
 const Footer = () => {
   const [privacyPolicy, setPrivacyPolicy] = useState('');
@@ -12,12 +13,13 @@ const Footer = () => {
   const [popupContent, setPopupContent] = useState('');
 
   useEffect(() => {
-    // Fetch markdown files when component mounts
     const fetchContent = async () => {
       try {
-        const privacyPolicyRes = await fetch('/content/privacy-policy.md');
-        const legalNoticeRes = await fetch('/content/legal-notice.md');
-        const termsOfServiceRes = await fetch('/content/terms-of-service.md');
+        const [privacyPolicyRes, legalNoticeRes, termsOfServiceRes] = await Promise.all([
+          fetch('/content/privacy-policy.md'),
+          fetch('/content/legal-notice.md'),
+          fetch('/content/terms-of-service.md'),
+        ]);
 
         if (!privacyPolicyRes.ok || !legalNoticeRes.ok || !termsOfServiceRes.ok) {
           throw new Error('Failed to fetch content');
@@ -47,6 +49,22 @@ const Footer = () => {
   const closePopup = () => {
     setIsPopupOpen(false);
     setPopupContent('');
+  };
+
+  const renderers = {
+    code({ node, inline, className, children, ...props }: { node?: any; inline?: boolean; className?: string; children?: React.ReactNode; [key: string]: any }) {
+      return !inline ? (
+        <SyntaxHighlighter
+          language={String(className || '').replace('language-', '')}
+        >
+          {String(children).replace(/\n$/, '')}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    }
   };
 
   return (
@@ -349,7 +367,12 @@ const Footer = () => {
       {/* Modal Content */}
       <h2 className="text-2xl font-bold mb-4 text-gray-800">Popup Content</h2>
       <div className="prose max-w-none text-gray-700">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{popupContent}</ReactMarkdown>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={renderers}
+        >
+          {popupContent}
+        </ReactMarkdown>
       </div>
 
       {/* Footer Button */}
@@ -367,15 +390,15 @@ const Footer = () => {
         <div className="w-full px-4 md:w-1/3 lg:w-1/2">
           <div className="my-1 flex justify-center md:justify-end">
             <p className="text-base text-gray-7">
-          Designed and Developed by{" "}
-          <a
-            href="https://github.com/DEVRhylme-Foundation"
-            rel="nofollow noopner noreferrer"
-            target="_blank"
-            className="text-gray-1 hover:underline"
-          >
-            DEVRhylme Technical Team
-          </a>
+              © {new Date().getFullYear()} - Designed and Developed by{" "}
+              <a
+                href="https://github.com/DEVRhylme-Foundation"
+                rel="nofollow noopner noreferrer"
+                target="_blank"
+                className="text-gray-1 hover:underline"
+              >
+                DEVRhylme Technical Team
+              </a>
             </p>
           </div>
         </div>
