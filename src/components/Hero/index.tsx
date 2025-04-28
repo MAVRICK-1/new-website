@@ -1,4 +1,4 @@
-import Spline from '@splinetool/react-spline/next';
+import Spline from '@splinetool/react-spline';
 import Link from "next/link";
 import "./hero.css";
 const Hero = () => {
@@ -12,7 +12,7 @@ const Hero = () => {
         <div className='robotiii absolute h-56 w-full justify-center items-center top-[450px] sm:top-[600px] md:top-[470px]'>
         <center><div  className='relative h-48 sm:w-2/5 md:w-2/5 justify-center z-4'>
         <Spline
-        scene="https://prod.spline.design/xftrkvFRb1DBOaCk/scene.splinecode" 
+        scene="https://prod.spline.design/J78fdtgOUQZFp83d/scene.splinecode" 
       />
           </div></center>
         </div>
